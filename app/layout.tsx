@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { PuterProvider } from "@/components/puterProvider";
+import { ConditionalNavbar } from "@/components/ConditionalNavbar";
 
 const geistSans = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -32,7 +33,12 @@ export default function RootLayout({
         <script src="https://js.puter.com/v2/"></script>
       </head>
       <body className={`${geistSans.variable} antialiased`}>
-        <PuterProvider>{children}</PuterProvider>
+        <PuterProvider>
+          <main>
+            <ConditionalNavbar />
+            {children}
+          </main>
+        </PuterProvider>
       </body>
     </html>
   );

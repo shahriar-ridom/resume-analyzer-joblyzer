@@ -1,13 +1,10 @@
 import { AuthGuard } from "@/components/AuthGuard";
-import Navbar from "@/components/Navbar";
 import ResumeCard from "@/components/ResumeCard";
 import { resumes } from "@/constants/page";
 
 function Home() {
   return (
     <AuthGuard>
-      <main>
-        <Navbar />
         <section className="main-section">
           <div className="page-heading md:py-16">
             <h1>Track Your Application & Resume Ratings</h1>
@@ -21,7 +18,6 @@ function Home() {
             </div>
           )}
         </section>
-      </main>
     </AuthGuard>
   );
 }

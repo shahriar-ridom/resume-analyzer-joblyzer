@@ -38,6 +38,9 @@ const Auth = () => {
       <div className="gradient-border shadow-lg">
         <section className="flex flex-col gap-8 bg-white rounded-2xl p-10">
           <div className="flex flex-col items-center gap-2 text-center">
+            <h3>
+              {next != "/" ? "You have to Login to Access this Page" : ""}
+            </h3>
             <h1>Welcome</h1>
             {auth.isAuthenticated ? (
               <h2>You are logged in!</h2>
