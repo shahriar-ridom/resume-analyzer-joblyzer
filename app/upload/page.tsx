@@ -91,8 +91,9 @@ const Upload = () => {
     setStatusText("Analysis Complete! Redirecting...");
     setTimeout(() => {
       setIsProcessing(false);
+      router.push(`/resume/${uuid}`);
     }, 3000);
-    console.log("Resume Data:", data);
+    console.log("Resume Analysis Data:", data);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

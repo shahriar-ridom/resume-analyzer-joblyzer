@@ -6,7 +6,7 @@ export function ConditionalNavbar() {
   const pathname = usePathname();
 
   // Don't show navbar on auth pages
-  if (pathname.startsWith("/auth")) {
+  if (pathname.startsWith("/auth") || pathname.startsWith("/resume/")) {
     return null;
   }
 
