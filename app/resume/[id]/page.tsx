@@ -12,7 +12,7 @@ import Details from "@/components/Details";
 
 const Resume = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
-  const { auth, isLoading, fs, kv } = usePuterStore();
+  const { fs, kv } = usePuterStore();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
@@ -37,11 +37,27 @@ const Resume = ({ params }: { params: Promise<{ id: string }> }) => {
 
       const imageUrl = URL.createObjectURL(imageBlob);
       setImageUrl(imageUrl);
-      const parsedFeedback =
-        typeof data.feedback === "string"
-          ? JSON.parse(data.feedback)
-          : data.feedback;
-      setFeedback(parsedFeedback || null);
+
+      // Safe feedback parsing with error handling
+      const parsedFeedback = (() => {
+        try {
+          if (typeof data.feedback === "string") {
+            // Check if feedback string is not empty and is valid
+            if (!data.feedback || data.feedback.trim() === "") {
+              console.warn("Empty feedback string for resume:", id);
+              return null;
+            }
+            return JSON.parse(data.feedback);
+          }
+          return data.feedback || null;
+        } catch (error) {
+          console.error("Error parsing feedback for resume:", id, error);
+          console.log("Problematic feedback value:", data.feedback);
+          return null;
+        }
+      })();
+
+      setFeedback(parsedFeedback);
     };
     loadResume();
   }, []);
