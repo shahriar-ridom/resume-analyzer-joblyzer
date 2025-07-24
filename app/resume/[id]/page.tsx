@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect, use } from "react";
 import back from "@/public/icons/back.svg";
 import { usePuterStore } from "@/lib/puter";
-import dummyresume from "@/public/images/resume-scan-2.gif"; // Placeholder for dummy resume image
+import dummyresume from "@/public/images/resume-scan-2.gif";
 import { AuthGuard } from "@/components/AuthGuard";
 import Summary from "@/components/Summary";
 import Ats from "@/components/Ats";
@@ -20,24 +20,31 @@ const Resume = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const loadResume = async () => {
       const resume = await kv.get(`resume:${id}`);
+
       if (!resume) return;
+
       const data = JSON.parse(resume);
+
       const resumeBlog = await fs.read(data.resumePath);
       if (!resumeBlog) return;
+
       const pdfBlob = new Blob([resumeBlog], { type: "application/pdf" });
       const resumeUrl = URL.createObjectURL(pdfBlob);
       setResumeUrl(resumeUrl);
 
       const imageBlob = await fs.read(data.imagePath);
       if (!imageBlob) return;
+
       const imageUrl = URL.createObjectURL(imageBlob);
       setImageUrl(imageUrl);
-
-      setFeedback(data.feedback || null);
-      console.log({ resumeUrl, imageUrl, feedback: data.feedback });
+      const parsedFeedback =
+        typeof data.feedback === "string"
+          ? JSON.parse(data.feedback)
+          : data.feedback;
+      setFeedback(parsedFeedback || null);
     };
     loadResume();
-  }, [id, fs, kv]);
+  }, []);
 
   return (
     <AuthGuard>
@@ -57,7 +64,8 @@ const Resume = ({ params }: { params: Promise<{ id: string }> }) => {
           </Link>
         </nav>
         <div className="flex flex-row w-full mt-10 max-lg:flex-col-reverse">
-          <section className="feedback-section sticky top-0 items-center justify-center">
+          <section className="feedback-section sticky">
+            <h2 className="text-4xl text-black font-bold">Your Resume</h2>
             {imageUrl && resumeUrl && (
               <div className="animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] max-2xl:h-fit w-fit">
                 <Link
@@ -83,19 +91,22 @@ const Resume = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
                 <Summary feedback={feedback} />
                 <Ats
-                  score={feedback.ATS.score || 0}
-                  suggestions={feedback.ATS.tips || []}
+                  score={feedback.ATS?.score || 0}
+                  suggestions={feedback.ATS?.tips || []}
                 />
                 <Details feedback={feedback} />
               </div>
             ) : (
-              <Image
-                src={dummyresume}
-                alt="Dummy Resume"
-                width={200}
-                height={200}
-                className="w-full"
-              />
+              <div>
+                <p>Loading feedback...</p>
+                <Image
+                  src={dummyresume}
+                  alt="Loading"
+                  width={200}
+                  height={200}
+                  className="w-full"
+                />
+              </div>
             )}
           </section>
         </div>
